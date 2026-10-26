@@ -1,444 +1,335 @@
-# Idle Loop Observatory
-### Retention Analytics, Experiment Readiness & Statistical Quality Checks
+# 🎮 Idle Loop Observatory
+### A Game Analytics Command Center for Retention, Player Behaviour & Experiment Readiness
 
-**A reproducible game-data analytics project built with Python, SQL, DuckDB, pandas, and statistical methods.**
+<p align="center">
+  <a href="https://idle-loop-observatory-sggcmvrlqepybsy9xwrg2q.streamlit.app/">
+    <img src="https://img.shields.io/badge/🚀_Launch-Live_Dashboard-00F5FF?style=for-the-badge" alt="Launch Live Dashboard">
+  </a>
+  <a href="https://github.com/souravgupta166/Idle-Loop-Observatory">
+    <img src="https://img.shields.io/badge/GitHub-Source_Code-181717?style=for-the-badge&logo=github" alt="GitHub Repository">
+  </a>
+</p>
 
-Idle Loop Observatory explores how a game data analyst can turn event-level telemetry into player cohorts, retention metrics, uncertainty estimates, and experiment-readiness checks.
-
-The project combines two deliberately separate datasets:
-
-1. **Public Firebase/Google Analytics sample:** historical event data from Flood-It!, used to validate event-processing and retention-analysis methods.
-2. **Synthetic idle-game event data:** generated development data used to test local analytics pipelines, cohort construction, experiment assignment, and quality checks.
-
-> **Important:** This repository does not contain Kolibri Games data. Flood-It! is not an idle game, and the synthetic data does not represent real players. The project demonstrates analytical methods and engineering practices, not conclusions about Kolibri Games or its products.
-
----
-
-## Table of Contents
-
-- [Project Objectives](#project-objectives)
-- [Architecture](#architecture)
-- [Data Sources and Provenance](#data-sources-and-provenance)
-- [Public Dataset Analysis](#public-dataset-analysis)
-- [Retention Metric Definitions](#retention-metric-definitions)
-- [Statistical Methods](#statistical-methods)
-- [Public Dataset Results](#public-dataset-results)
-- [Synthetic Experiment Readiness](#synthetic-experiment-readiness)
-- [Data Quality and Validation](#data-quality-and-validation)
-- [Repository Structure](#repository-structure)
-- [Setup and Reproduction](#setup-and-reproduction)
-- [Limitations and Next Steps](#limitations-and-next-steps)
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-Analytics-3776AB?style=flat-square&logo=python&logoColor=white">
+  <img src="https://img.shields.io/badge/Streamlit-Interactive_UI-FF4B4B?style=flat-square&logo=streamlit&logoColor=white">
+  <img src="https://img.shields.io/badge/SQL-Data_Analysis-4479A1?style=flat-square&logo=postgresql&logoColor=white">
+  <img src="https://img.shields.io/badge/Plotly-Visualisation-3F4F75?style=flat-square&logo=plotly&logoColor=white">
+  <img src="https://img.shields.io/badge/Testing-Pytest-0A9EDC?style=flat-square&logo=pytest&logoColor=white">
+</p>
 
 ---
 
-## Project Objectives
+## 🚀 Explore the project
 
-The project is designed to demonstrate practical skills relevant to game data analytics:
+**Live dashboard:** https://idle-loop-observatory-sggcmvrlqepybsy9xwrg2q.streamlit.app/
 
-- Transform raw event telemetry into player-level and cohort-level datasets.
-- Define retention metrics with explicit event and observation windows.
-- Compare retention across platforms without confusing descriptive differences with statistical evidence.
-- Quantify uncertainty around estimated retention rates.
-- Check experiment assignment for sample-ratio mismatch (SRM).
-- Apply eligibility and observation-maturity checks before evaluating player outcomes.
-- Calculate experiment sample-size requirements for a hypothetical improvement.
-- Validate exported datasets and document their provenance.
-- Produce reproducible charts, SQL queries, reports, and automated tests.
+**Source code:** https://github.com/souravgupta166/Idle-Loop-Observatory
 
-## Architecture
+Idle Loop Observatory is an interactive game analytics portfolio project built to explore how analysts can measure player retention, investigate behavioural patterns, assess experiment quality, and plan statistically informed game experiments.
 
-The workflow separates data ingestion, validation, analytics, and reporting.
+The project combines SQL-based event analysis, Python analytics, uncertainty estimation, experiment-readiness checks, automated tests, and a dark, gaming-inspired Streamlit interface.
 
-```text
-Public Firebase / Google Analytics sample
-                  |
-                  v
-       BigQuery SQL investigations
-                  |
-                  v
-        CSV exports to local files
-                  |
-                  v
-       Export validation and checks
-                  |
-                  v
-        Retention calculations
-                  |
-                  v
-     Charts + findings report
+The objective is not simply to display metrics. It is to connect **raw events → trustworthy player-level metrics → statistical interpretation → better product decisions.**
 
-
-Synthetic idle-game event generator
-                  |
-                  v
-       Synthetic event-level data
-                  |
-                  v
-       Player cohort construction
-                  |
-                  v
-    Experiment assignment and checks
-                  |
-                  v
-    Retention uncertainty + readiness
-```
-
-The two data sources are kept separate so that synthetic results cannot accidentally be presented as real-world player findings.
+> **Data transparency:** The public-data analysis uses the historical Firebase/Google Analytics Flood-It! sample from 2018. Flood-It! is not an idle game, and the dataset is not from Kolibri Games. Synthetic idle-game events are used separately for development and experiment-workflow demonstrations. Neither source establishes actual Kolibri Games player behaviour.
 
 ---
 
-## Data Sources and Provenance
+## 🕹️ What can you explore?
 
-### 1. Public Firebase/Google Analytics sample
+| Mission | What it does | Why it matters |
+|---|---|---|
+| 🎮 Command Center | Summarises player cohorts and retention metrics | Quickly understand the overall retention picture |
+| 📊 Player Observatory | Explores daily retention, platforms, and cohorts | Investigate when players return after their first observed activity |
+| ⚔️ Experiment Arena | Examines experiment balance, group metrics, uncertainty, and sample-size planning | Assess whether an experiment is ready for reliable interpretation |
+| 🛡️ Data Integrity | Presents data-quality and validation information | Identify issues before trusting the results |
 
-**Source:** `firebase-public-project.analytics_153293282`
+Open the [live dashboard](https://idle-loop-observatory-sggcmvrlqepybsy9xwrg2q.streamlit.app/) to explore the interface.
 
-**Access:** Google BigQuery public dataset.
+---
 
-The project inspected the source schema, identified daily table coverage, examined event quality, and calculated D1/D7 retention using exported event dates.
+## 🎯 Product questions this project investigates
 
-| Property | Verified result |
-|---|---|
-| Game | Flood-It! |
-| First daily table | `events_20180612` |
-| Last daily table | `events_20181003` |
-| Daily tables identified | 114 |
-| Eligible cohort dates | 12 June 2018 – 26 September 2018 |
-| Selected event-quality rows with missing pseudonymous user IDs | 0 |
+A game analytics workflow should help answer questions that matter to product, design, and live-operations teams.
 
-The source data is historical and is not an idle-game dataset. It is used to exercise real event-data processing methods, not to establish idle-game benchmarks.
+- How many newly observed players return the next day?
+- What proportion of a cohort returns exactly seven days after its cohort date?
+- How do observed retention rates differ across platforms?
+- How much statistical uncertainty surrounds a retention estimate?
+- Are control and treatment groups allocated in the expected proportions?
+- Is an experiment sufficiently powered to detect a meaningful improvement?
+- Are the event definitions, observation windows, and data-quality checks consistent?
+- Which conclusions are supported by the available evidence, and which remain hypotheses?
 
-### 2. Synthetic idle-game dataset
+These are analytical questions the project is designed to investigate. They are not claims about any particular commercial game's performance.
 
-The local generator creates a reproducible development fixture.
+---
 
-| Property | Value |
+## 📈 Public-data findings
+
+The project analyses the public Firebase/Google Analytics Flood-It! sample.
+
+| Metric | Observed result |
 |---|---:|
-| Synthetic players | 500 |
-| Observation period | 14 days |
-| Random seed | 42 |
-| Generated event rows | 8,416 |
+| Eligible observed player cohorts | 3,998 |
+| D1 retained players | 718 |
+| D1 retention | 17.96% |
+| D1 95% Wilson confidence interval | 16.80%–19.18% |
+| D7 retained players | 191 |
+| D7 retention | 4.78% |
+| D7 95% Wilson confidence interval | 4.16%–5.48% |
+| Source table coverage | 12 June–3 October 2018 |
 
-The generated events include installation, sessions, tutorial completion, upgrades, and offline reward claims.
+The eligible cohort dates run from 12 June through 26 September 2018, allowing seven days of follow-up within the available table coverage.
 
-Because this dataset is synthetic, its event frequencies, retention rates, and player behavior must not be interpreted as estimates of real users.
+### What do these numbers mean?
 
-### Provenance rules
+- **D1 retention of 17.96%:** 718 of 3,998 eligible observed cohorts had a qualifying session on the exact following day.
+- **D7 retention of 4.78%:** 191 of 3,998 eligible observed cohorts had a qualifying session exactly seven days after their cohort date.
+- **Confidence intervals:** These quantify sampling uncertainty around the estimated proportions under the chosen statistical model. They do not account for every possible source of measurement or selection bias.
 
-- Keep public and synthetic datasets separately labeled.
-- Preserve the source and limitations of every analysis.
-- Define metric numerators, denominators, and observation windows.
-- Validate data quality before interpreting results.
-- Do not make causal claims from outcomes that were not generated by a genuine randomized treatment effect.
+These are historical sample results, not current industry benchmarks. Missing observed activity does not prove that a person permanently churned, and the results should not be generalised to idle games or Kolibri Games.
 
----
-
-## Public Dataset Analysis
-
-Five BigQuery queries were developed and exported.
-
-| Query | Purpose |
-|---|---|
-| `01_schema_inspection.sql` | Inspect the columns and data types of a daily event table. |
-| `02_date_coverage.sql` | Identify the first and last daily tables and count available tables. |
-| `03_event_quality_by_day.sql` | Aggregate selected events and check for missing user identifiers. |
-| `04_daily_retention.sql` | Calculate D1/D7 retention by cohort date and platform. |
-| `05_retention_summary.sql` | Calculate pooled platform results and confidence intervals. |
-
-The five exports were checked locally by `src/data/validate_flood_it_exports.py`.
-
-The export validation confirmed:
-
-- All five expected CSV files were present and passed the configured checks.
-- The source coverage query returned 114 daily tables.
-- The selected event-quality export had no missing user IDs.
-- The daily retention export contained 203 cohort-date/platform rows.
-- The pooled platform counts and retention calculations reconciled under the configured validation rules.
-
-The local analysis script reads these exports. It does not query BigQuery automatically.
+Detailed findings and validation outputs are available in [`reports/public_data/`](reports/public_data/).
 
 ---
 
-## Retention Metric Definitions
+## 🧠 Analytical methodology
 
-### Cohort construction
+### 1. Event data and cohort construction
 
-A player enters a cohort on their earliest observed `first_open` date.
+Player analytics begins with a consistent definition of who belongs in a cohort and which events qualify as returning activity.
 
 For the public dataset:
 
-- Player identifier: `user_pseudo_id`.
-- Cohort date: earliest observed `first_open` date.
-- Platform: platform associated with the earliest observed event timestamp.
-- Activity event: `session_start`.
-- Date basis: exported `event_date`, used consistently throughout the calculation.
+1. Identify each player's earliest observed `first_open` event.
+2. Use that date as the player's cohort date.
+3. Identify qualifying `session_start` events on the exact target day.
+4. Exclude cohorts without sufficient follow-up for the requested retention metric.
+5. Aggregate player outcomes into cohort- and platform-level metrics.
 
-Cohorts after 26 September 2018 are excluded because seven days of follow-up are required for D7 retention and the available source data ends on 3 October 2018.
+The exported `event_date` field is used consistently for the cohort-day calculations.
 
-### Day 1 retention
-
-A player is D1-retained if they have a `session_start` on the calendar day immediately following their cohort date.
+**D1 retention**
 
 \[
-D1 = \frac{\text{Players with a session on cohort day + 1}}
-{\text{Eligible cohort players}}
+R_{D1}=\frac{\text{Players active on cohort day}+1}
+{\text{Eligible cohort players}}\times100
 \]
 
-### Day 7 retention
-
-A player is D7-retained if they have a `session_start` exactly seven calendar days after their cohort date.
+**D7 retention**
 
 \[
-D7 = \frac{\text{Players with a session on cohort day + 7}}
-{\text{Eligible cohort players}}
+R_{D7}=\frac{\text{Players active on cohort day}+7}
+{\text{Eligible cohort players}}\times100
 \]
 
-These are **exact-day retention metrics**, not rolling or cumulative retention. A player active on day 6 but not day 7 does not count as D7-retained.
+These are exact-day metrics, not cumulative measures of whether a player returned at any time during the first seven days.
 
-### Platform aggregation
+### 2. Retention uncertainty with Wilson confidence intervals
 
-For pooled platform retention, player counts are aggregated before calculating the rate:
+A retention percentage alone can hide how uncertain an estimate is, particularly for smaller cohorts.
 
-\[
-\text{Retention rate} =
-\frac{\sum \text{retained players}}
-{\sum \text{cohort players}}
-\]
-
-This avoids taking an unweighted average of daily percentages, which could give a small cohort the same influence as a large cohort.
-
----
-
-## Statistical Methods
-
-### 1. Wilson confidence interval for a retention rate
-
-Retention is modeled as a binary outcome: a player either satisfies the specified retention definition or does not.
-
-A normal-approximation interval can behave poorly when proportions are low or sample sizes are limited. The project therefore uses the **Wilson score interval** for the pooled public retention estimates.
-
-Let:
-
-- \(n\) = eligible cohort size.
-- \(x\) = number of retained players.
-- \(\hat p = x/n\) = observed retention rate.
-- \(z = 1.96\) for a nominal 95% interval.
-
-The Wilson interval is:
+For an observed proportion \(\hat p=x/n\), the Wilson interval is:
 
 \[
 \frac{
-\hat p + \frac{z^2}{2n}
-\ \pm
-z\sqrt{\frac{\hat p(1-\hat p)}{n}+\frac{z^2}{4n^2}}
+\hat p+\frac{z^2}{2n}
+\pm z\sqrt{\frac{\hat p(1-\hat p)}{n}+\frac{z^2}{4n^2}}
 }{
 1+\frac{z^2}{n}
 }
 \]
 
-The result is bounded between 0 and 1 and is generally more reliable than a simple symmetric normal interval for binomial proportions.
+Where:
 
-These intervals quantify sampling uncertainty under the binomial model. They do not automatically account for instrumentation errors, selection bias, or other measurement problems.
+- \(x\) is the number of retained players.
+- \(n\) is the eligible cohort size.
+- \(\hat p\) is the observed retention proportion.
+- \(z\) is the standard-normal critical value; approximately 1.96 for a two-sided 95% interval.
 
-### 2. Comparing two retention rates
+Wilson intervals are used instead of relying on the simple normal approximation for a proportion, especially when the number of successes is small or the observed rate is near zero or one.
 
-The experiment analytics module compares two groups using a two-proportion z-test and a Newcombe confidence interval for the difference in proportions.
+### 3. Comparing two retention rates
 
-The reported difference is:
+For two independent groups, the implementation compares observed proportions using a two-proportion z-test.
 
-\[
-\Delta = \hat p_A - \hat p_B
-\]
-
-The sign depends on group order. The experiment-readiness report uses treatment minus control.
-
-The null hypothesis for the two-sided test is:
+The pooled proportion under the null hypothesis is:
 
 \[
-H_0: p_A = p_B
+\hat p=\frac{x_A+x_B}{n_A+n_B}
 \]
 
-The alternative is:
+The standard error under the null is:
 
 \[
-H_1: p_A \ne p_B
+SE_0=
+\sqrt{\hat p(1-\hat p)
+\left(\frac{1}{n_A}+\frac{1}{n_B}\right)}
 \]
 
-A p-value below the selected significance level provides evidence against the null hypothesis under the test assumptions. A non-significant result does not establish that the groups are equivalent.
-
-The Newcombe interval provides an uncertainty range for the difference in proportions rather than relying only on overlapping individual confidence intervals.
-
-### 3. Sample-size planning
-
-The sample-size calculator uses a two-independent-proportion design through `statsmodels`.
-
-The hypothetical design inputs are:
-
-- Baseline conversion/retention: 30%.
-- Target rate: 35%.
-- Absolute minimum detectable effect: 5 percentage points.
-- Two-sided significance level: 5%.
-- Statistical power: 80%.
-
-The resulting planning estimate is **1,376 players per arm, or 2,752 total**, under the specified calculator assumptions.
-
-This is a hypothetical planning scenario, not a claim that the public Flood-It! retention rate is 30% or that an actual experiment achieved a 5-percentage-point lift. The design should be recalculated for the real metric, baseline, effect size, allocation ratio, and analysis plan.
-
-### 4. Sample-ratio mismatch (SRM)
-
-The experiment-quality module uses a chi-square goodness-of-fit test to compare observed assignment counts with expected counts.
-
-For a two-arm experiment with an expected 50:50 split:
+The test statistic is:
 
 \[
-E_C = N \times 0.5,\qquad E_T = N \times 0.5
+z=\frac{\hat p_A-\hat p_B}{SE_0}
 \]
 
-The Pearson chi-square statistic is:
+The implementation also calculates a Newcombe confidence interval for the difference in proportions, using Wilson intervals for the two individual rates.
 
-\[
-\chi^2 = \sum_i \frac{(O_i-E_i)^2}{E_i}
-\]
+Interpretation matters: a small p-value is evidence against the null hypothesis under the test assumptions, not proof that a product change caused the difference. A non-significant result does not prove that the groups are equivalent.
 
-where \(O_i\) and \(E_i\) represent observed and expected group counts.
+### 4. Experiment sample-size planning
 
-The readiness workflow uses an SRM significance threshold of 0.001. This stricter threshold is used as a diagnostic for unexpected allocation imbalance; it is not a universal threshold for every experiment.
+The experiment-design module estimates the sample size needed to detect a specified difference between two proportions.
 
-A passing SRM check does not prove that randomization, exposure logging, or outcome measurement is otherwise correct.
+The current illustrative planning scenario uses:
 
-### 5. Observation maturity
-
-Retention outcomes are only interpretable after players have had enough time to complete the specified observation window.
-
-The experiment-quality module includes a maturity filter with configurable observation day and processing delay. This helps prevent players with incomplete follow-up from being incorrectly treated as non-retained.
-
-The cutoff and delay should reflect the actual data pipeline and metric definition in a production experiment.
-
----
-
-## Public Dataset Results
-
-The validated pooled results are:
-
-| Platform | Cohort users | D1 retained | D1 retention (95% CI) | D7 retained | D7 retention (95% CI) |
-|---|---:|---:|---:|---:|---:|
-| All platforms | 3,998 | 718 | 17.96% (16.80–19.18%) | 191 | 4.78% (4.16–5.48%) |
-| Android | 2,670 | 472 | 17.68% (16.28–19.17%) | 129 | 4.83% (4.08–5.71%) |
-| iOS | 1,328 | 246 | 18.52% (16.53–20.70%) | 62 | 4.67% (3.66–5.94%) |
-
-### Interpretation
-
-- Overall D1 retention is 17.96%, based on 718 of 3,998 cohort users.
-- Overall D7 retention is 4.78%, based on 191 of 3,998 cohort users.
-- The descriptive Android-minus-iOS difference is −0.84 percentage points for D1 and +0.16 percentage points for D7.
-- The daily export contains 203 cohort-date/platform rows. The plotting script also calculates a pooled daily series across 102 cohort dates.
-- Daily percentages may be volatile when cohorts are small.
-
-The platform differences are descriptive. Overlap between individual confidence intervals is not a formal significance test, and this report does not claim that platform causes a retention difference.
-
-### Generated reports
-
-- `reports/public_data/flood_it_d1_retention.png`
-- `reports/public_data/flood_it_d7_retention.png`
-- `reports/public_data/flood_it_retention_findings.md`
-- `reports/public_data/flood_it_validation_report.txt`
-
-The charts visualize daily cohort retention by platform. The Markdown report records the pooled metrics, definitions, interpretation, and limitations.
-
----
-
-## Synthetic Experiment Readiness
-
-The local experiment workflow builds a player-level cohort dataset from the synthetic event log, generates reproducible experiment assignments, checks sample allocation, and compares binary retention outcomes.
-
-The current run used a reproducible assignment seed of `20261026`.
-
-### Assignment and SRM
-
-| Group | Assigned players |
+| Input | Value |
 |---|---:|
-| Control | 257 |
-| Treatment | 243 |
-| Total | 500 |
+| Baseline rate | 30% |
+| Target rate | 35% |
+| Absolute minimum detectable effect | 5 percentage points |
+| Significance level, α | 0.05 |
+| Statistical power | 80% |
+| Required sample size | 1,376 per arm |
+| Total required sample | 2,752 |
 
-The SRM check returned a p-value of approximately 0.531, so the configured SRM test did not flag an allocation imbalance at the 0.001 threshold.
+This is a hypothetical planning example, not an observed retention result.
 
-This is a check of assignment counts only. It does not establish that all experiment-quality requirements have been satisfied.
+The sample-size calculation uses a normal-approximation method for two independent proportions. Actual planning should also consider the metric definition, allocation ratio, repeated measurements, clustering, multiple comparisons, expected data loss, and the chosen statistical test.
 
-### Synthetic outcome comparison
+### 5. Sample Ratio Mismatch (SRM)
 
-| Metric | Control | Treatment | Treatment − control | p-value |
-|---|---:|---:|---:|---:|
-| D1 retention | 46.30% (119/257) | 46.91% (114/243) | +0.61 pp | 0.8913 |
-| D7 retention | 28.79% (74/257) | 27.57% (67/243) | −1.22 pp | 0.7615 |
+A well-designed experiment should allocate users approximately according to the intended assignment ratio.
 
-The corresponding 95% Newcombe intervals for treatment minus control were:
+For a two-arm experiment, the SRM module compares observed group counts against expected counts using a chi-square goodness-of-fit statistic:
 
-- D1: approximately −8.08 to +9.29 percentage points.
-- D7: approximately −9.05 to +6.66 percentage points.
+\[
+\chi^2=\sum_{i=1}^{k}\frac{(O_i-E_i)^2}{E_i}
+\]
 
-Neither comparison is statistically significant at a conventional 5% threshold. The intervals are wide and include zero.
+Where:
 
-**Crucial limitation:** the synthetic assignment was applied to pre-existing synthetic outcomes; a genuine treatment effect was not simulated. These numbers demonstrate the mechanics of an experiment-readiness workflow, not the causal impact of a product change.
+- \(O_i\) is the observed count in group \(i\).
+- \(E_i\) is the expected count under the assignment plan.
+- \(k\) is the number of groups.
 
-### Synthetic output files
+The implementation uses a configurable significance threshold, with 0.001 as the illustrative default.
 
-- `data/processed/synthetic_player_cohort.csv`
-- `data/processed/synthetic_experiment_assignments.csv`
-- `data/processed/synthetic_experiment_metrics.csv`
-- `data/processed/synthetic_experiment_srm.json`
-- `data/processed/synthetic_experiment_readiness.md`
+An SRM flag indicates that the assignment counts warrant investigation. It does not, by itself, identify the cause of the mismatch.
 
-These generated files are excluded from version control by `.gitignore`.
+### 6. Experiment data quality and observation windows
+
+Retention outcomes are only meaningful when players have had sufficient time to reach the measurement window.
+
+The quality module supports:
+
+- Filtering players whose observation window has matured.
+- Applying an analysis cutoff and optional processing delay.
+- Checking control/treatment allocation balance.
+- Summarising binary outcomes by assignment group.
+
+For example, a D7 outcome should not be treated as a negative result for a player who has not yet had seven days of follow-up.
+
+The analysis also distinguishes data-quality failures from product-performance changes. Missing events, immature observation windows, and unexpected assignment counts should be investigated before interpreting an experiment result.
 
 ---
 
-## Data Quality and Validation
+## 🧪 Synthetic experiment demonstration
 
-The project uses checks at different stages rather than assuming that successful code execution means the data is correct.
+The project includes a separate synthetic idle-game event generator and an experiment-readiness workflow.
 
-### Public export validation
+The current development fixture contains 500 simulated players over 14 days. These generated events are useful for testing player-level aggregation, retention calculations, group assignment, and experiment-quality checks.
 
-`src/data/validate_flood_it_exports.py` checks the expected exports, required columns, row counts and duplicates, retention arithmetic, confidence interval bounds, and reconciliation between platform and overall counts.
+In the illustrative experiment run, the generated cohort was assigned to:
 
-### Synthetic cohort construction
+- Control: 257 players
+- Treatment: 243 players
 
-`src/analytics/build_player_cohort.py` builds one player-level row per installed synthetic player, calculates retention flags, and uses an analysis cutoff to mark whether observation windows are eligible.
+The SRM check did not flag an allocation mismatch at the configured threshold. The retention comparisons were not statistically significant:
 
-Ineligible outcomes are represented as missing rather than being silently treated as non-retained.
+| Metric | Control | Treatment | Treatment − control |
+|---|---:|---:|---:|
+| D1 retention | 46.30% | 46.91% | +0.61 percentage points |
+| D7 retention | 28.79% | 27.57% | −1.22 percentage points |
 
-### Experiment quality
+These results are outputs from a synthetic development fixture. The underlying retention outcomes were generated before group assignment; no treatment effect was simulated. The observed differences therefore must not be interpreted as evidence that a game change improved or reduced retention.
 
-`src/analytics/experiment_quality.py` provides functions for observation maturity, SRM, and binary metric summaries.
+The synthetic workflow demonstrates how an analyst can validate a pipeline and interpret uncertainty before applying the same process to a properly instrumented, randomised product experiment.
 
-### Automated tests
+---
 
-Run the test suite with:
+## 🛡️ Data quality, validation, and testing
 
-```powershell
-.\.venv\Scripts\python.exe -m pytest tests -q
+The project includes a dedicated public-export validation script and automated tests.
+
+Validation checks include:
+
+- Required files and expected columns.
+- Daily event-quality records and duplicate rows.
+- Retention calculations and count consistency.
+- Confidence-interval bounds and arithmetic.
+- Reconciliation of platform-level counts with pooled totals.
+
+The recorded public-export validation run completed with **zero errors and zero warnings**.
+
+The test suite covers cohort construction, retention SQL, confidence intervals, experiment design, experiment quality, and experiment-readiness outputs.
+
+Run the tests locally:
+
+```bash
+python -m pytest tests -q
 ```
 
-The current development run passed **69 tests**. Re-run the suite after making changes to confirm that the current checkout remains valid.
+A previously recorded development run passed 69 tests. Re-run the suite after making changes to verify the current code.
 
 ---
 
-## Repository Structure
+## 🏗️ Architecture and project structure
 
 ```text
-idle-loop-observatory/
-├── data/
-│   ├── external/flood_it/       # Downloaded CSV exports; Git-ignored
-│   ├── processed/               # Generated outputs; Git-ignored
-│   ├── raw/                     # Raw data; Git-ignored
-│   └── synthetic/               # Synthetic development fixture
+Idle-Loop-Observatory/
+│
+├── app.py
+├── requirements.txt
+├── README.md
+├── .gitignore
+│
 ├── docs/
-│   └── data_sources.yml          # Source metadata and provenance rules
+│   └── data_sources.yml
+│
+├── data/
+│   └── external/
+│       └── flood_it/
+│           ├── 01_schema_inspection.csv
+│           ├── 02_date_coverage.csv
+│           ├── 03_event_quality_by_day.csv
+│           ├── 04_daily_retention.csv
+│           └── 05_retention_summary.csv
+│
 ├── reports/
-│   └── public_data/              # Charts and Markdown findings
+│   └── public_data/
+│       ├── flood_it_d1_retention.png
+│       ├── flood_it_d7_retention.png
+│       ├── flood_it_retention_findings.md
+│       └── flood_it_validation_report.txt
+│
 ├── sql/
-│   ├── investigations/           # Synthetic-data SQL investigations
-│   └── public_data/               # BigQuery source queries
+│   ├── investigations/
+│   │   ├── 000_environment_check.sql
+│   │   ├── 001_public_game_data_audit.sql
+│   │   ├── 002_event_inventory.sql
+│   │   ├── 003_retention_by_day.sql
+│   │   └── 004_player_segmentation.sql
+│   │
+│   └── public_data/
+│       ├── 01_schema_inspection.sql
+│       ├── 02_date_coverage.sql
+│       ├── 03_event_quality_by_day.sql
+│       ├── 04_daily_retention.sql
+│       └── 05_retention_summary.sql
+│
 ├── src/
 │   ├── analytics/
 │   │   ├── analyze_flood_it_retention.py
@@ -447,127 +338,147 @@ idle-loop-observatory/
 │   │   ├── experiment_quality.py
 │   │   ├── retention_uncertainty.py
 │   │   └── run_experiment_readiness.py
+│   │
 │   └── data/
 │       ├── generate_synthetic_idle_events.py
 │       ├── profile_dataset.py
 │       └── validate_flood_it_exports.py
-├── tests/
-├── .gitignore
-└── README.md
+│
+└── tests/
+    ├── test_build_player_cohort.py
+    ├── test_experiment_design.py
+    ├── test_experiment_quality.py
+    ├── test_experiment_readiness.py
+    ├── test_retention_sql.py
+    └── test_retention_uncertainty.py
 ```
 
-Some output directories may be empty until the relevant scripts have been run. Downloaded exports, generated data, and local databases are excluded from Git to avoid committing bulky or machine-specific artifacts.
+Generated data and processed experiment outputs are excluded from version control to keep the repository lean. The five compact public-data exports are committed so the deployed dashboard can load the analysis inputs.
 
 ---
 
-## Setup and Reproduction
+## 🛠️ Technology stack
 
-### Requirements
+| Technology | Purpose |
+|---|---|
+| Python | Analytics logic, data processing, statistical calculations |
+| SQL | Event exploration, cohort construction, retention aggregation |
+| DuckDB | Local analytical queries over event data |
+| Pandas and NumPy | Data manipulation and numerical calculations |
+| SciPy and statsmodels | Statistical tests and experiment planning |
+| Streamlit | Interactive dashboard and navigation |
+| Plotly | Interactive visualisations |
+| Pytest | Automated validation and regression tests |
+| Git and GitHub | Version control and source-code hosting |
+| Streamlit Community Cloud | Public dashboard deployment |
 
-- Python with a compatible version for the installed project dependencies.
-- Git.
-- Google BigQuery access to run the public-data SQL queries.
-- A local Python virtual environment.
+---
 
-### 1. Create and activate a virtual environment
+## 💻 Run locally
 
-On Windows PowerShell:
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/souravgupta166/Idle-Loop-Observatory.git
+cd Idle-Loop-Observatory
+```
+
+### 2. Create and activate a virtual environment
+
+Windows PowerShell:
 
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 ```
 
-Install the project's dependencies from its dependency manifest if one is provided. If a dependency manifest has not yet been created, add one containing the packages required by the scripts before expecting a fresh environment to run them.
+macOS/Linux:
 
-### 2. Generate the synthetic fixture
-
-```powershell
-.\.venv\Scripts\python.exe src\data\generate_synthetic_idle_events.py
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
 ```
 
-This generates synthetic events for local pipeline testing.
+### 3. Install dependencies
 
-### 3. Build the synthetic player cohort
-
-```powershell
-.\.venv\Scripts\python.exe src\analytics\build_player_cohort.py
+```bash
+python -m pip install -r requirements.txt
 ```
 
-### 4. Run experiment-readiness checks
+### 4. Launch the dashboard
 
-```powershell
-.\.venv\Scripts\python.exe src\analytics\run_experiment_readiness.py
+```bash
+streamlit run app.py
 ```
 
-### 5. Run the tests
+Open the local URL shown in the terminal, usually `http://localhost:8501`.
 
-```powershell
-.\.venv\Scripts\python.exe -m pytest tests -q
+### 5. Run automated tests
+
+```bash
+python -m pytest tests -q
 ```
 
-### 6. Run the public-data queries
-
-Execute the SQL files in `sql/public_data/` in BigQuery. Export the results to the following exact local filenames:
-
-```text
-data/external/flood_it/01_schema_inspection.csv
-data/external/flood_it/02_date_coverage.csv
-data/external/flood_it/03_event_quality_by_day.csv
-data/external/flood_it/04_daily_retention.csv
-data/external/flood_it/05_retention_summary.csv
-```
-
-The BigQuery queries require access to the public dataset. Running the local plotting script does not require a live BigQuery connection once the expected exports are available.
-
-### 7. Validate the public exports
-
-```powershell
-.\.venv\Scripts\python.exe src\data\validate_flood_it_exports.py
-```
-
-### 8. Generate the retention charts and findings report
-
-```powershell
-.\.venv\Scripts\python.exe src\analytics\analyze_flood_it_retention.py
-```
-
-Inspect the generated artifacts:
-
-```powershell
-Get-ChildItem .\reports\public_data
-Get-Content .\reports\public_data\flood_it_retention_findings.md -Encoding utf8
-```
+The deployed app uses the five committed public-data exports. Rebuilding the synthetic experiment workflow requires running its relevant generation and analytics scripts in the intended sequence.
 
 ---
 
-## Limitations and Next Steps
+## 📚 Data sources and limitations
 
-### Current limitations
+### Public data
 
-- The public dataset is historical, covering 2018.
+The public-data workflow uses the Firebase/Google Analytics sample:
+
+`firebase-public-project.analytics_153293282.events_*`
+
+The source contains historical Flood-It! mobile-game event data. It is useful for demonstrating event-data analysis, cohort construction, retention measurement, and data-quality checks.
+
+It is not a source of Kolibri Games telemetry or idle-game-specific evidence.
+
+### Synthetic data
+
+The synthetic dataset is generated locally for development and workflow testing. It is not observed player behaviour, and it should not be combined with the public sample as though both represented the same population.
+
+### Important limitations
+
+- The public sample dates from 2018.
 - Flood-It! is not an idle game.
-- The public dataset does not represent Kolibri Games or its players.
-- A missing session event does not necessarily prove that a player stopped playing.
-- Retention results depend on instrumentation, identifiers, cohort construction, and observation windows.
-- Confidence intervals do not account for every source of measurement or selection bias.
-- Synthetic experiment outcomes are not evidence of a causal treatment effect.
-- The local export workflow requires a separate BigQuery export step.
+- The data is not from Kolibri Games.
+- Observed event absence is not definitive proof of churn.
+- Historical platform differences are descriptive, not causal.
+- Synthetic experiment results do not estimate a real treatment effect.
+- Confidence intervals and significance tests do not eliminate instrumentation bias, selection bias, or other study-design limitations.
 
-### Potential extensions
-
-1. Add a dependency manifest and pin tested package versions for easier reproduction.
-2. Add automated tests for the public-export validation and chart-generation modules.
-3. Add explicit configuration for cohort dates, metric windows, and analysis cutoffs.
-4. Add a formal platform-difference test to the public-data report if that comparison is needed.
-5. Add an experiment-analysis workflow using simulated treatment effects and verify type-I error and power over repeated simulations.
-6. Add sensitivity checks for event definitions, incomplete follow-up, and alternative retention windows.
-7. Extend the pipeline with a clearly sourced idle-game dataset if one with suitable provenance and access becomes available.
+These boundaries are intentional. A credible analytics workflow should make its evidence and assumptions explicit.
 
 ---
 
-## Summary
+## 🔭 Potential next steps
 
-Idle Loop Observatory demonstrates a reproducible workflow for event-data quality checks, cohort construction, exact-day retention, confidence intervals, sample-size planning, sample-ratio mismatch detection, and experiment-readiness reporting.
+The project provides a foundation for extending the workflow with:
 
-Its central principle is that **good game analytics requires more than calculating a metric**: it requires clear definitions, correct denominators, uncertainty estimates, data-quality checks, reproducible code, and honest communication about what the data can—and cannot—support.
+- Survival analysis and time-to-churn modelling.
+- Cohort retention heatmaps and deeper player segmentation.
+- More rigorous experiment monitoring and sequential decision frameworks.
+- Guardrail metrics, such as session frequency and monetisation, when suitable data is available.
+- Reproducible analytical reports and configurable cohort definitions.
+- An idle-game dataset with documented provenance and appropriate permissions.
+
+These are potential extensions, not features claimed to be implemented in the current version.
+
+---
+
+## 👨‍💻 About the project
+
+Idle Loop Observatory was built as a portfolio project to demonstrate practical game-data analytics skills: event-level data processing, retention definitions, SQL, statistical uncertainty, experiment design, validation, automated testing, and interactive reporting.
+
+The central principle is simple:
+
+**A metric is only useful when its definition is clear, its data is trustworthy, and its uncertainty is understood.**
+
+### 🔗 Links
+
+- **Live dashboard:** https://idle-loop-observatory-sggcmvrlqepybsy9xwrg2q.streamlit.app/
+- **GitHub repository:** https://github.com/souravgupta166/Idle-Loop-Observatory
+
+If you explore the project, feedback on the analytical methodology, experiment workflow, and dashboard experience is welcome.
