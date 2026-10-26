@@ -1,0 +1,13 @@
+Flood-It! Public Export Validation
+==================================
+Dataset: firebase-public-project.analytics_153293282
+Purpose: validate exported event and retention data
+Limitations: historical Flood-It! data; not idle-game data
+
+Files checked: 5
+Errors: 0
+Warnings: 0
+
+Errors:
+
+Warnings:

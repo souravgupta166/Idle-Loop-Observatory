@@ -1,0 +1,38 @@
+﻿project_name: Idle Loop Observatory
+purpose: >
+  Investigate player engagement, retention, progression, and
+  experiment design for idle-game product analytics.
+
+data_sources:
+  - source_id: flood_it_public
+    status: planned
+    type: real_public_event_data
+    game: Flood-It!
+    provider: Google Analytics / Firebase
+    access_method: BigQuery
+    intended_use:
+      - event_data_validation
+      - player_activity_analysis
+      - retention_methodology
+    limitations:
+      - not_an_idle_game
+      - some_fields_are_obfuscated
+      - cloud_access_required
+
+  - source_id: idle_game_synthetic
+    status: development_fixture
+    type: synthetic
+    game: Idle Loop Observatory prototype
+    intended_use:
+      - local_pipeline_testing
+      - idle_game_event_schema_testing
+      - experiment_workflow_testing
+    limitations:
+      - not_real_player_behavior
+      - cannot_support_real_world_product_claims
+
+rules:
+  - Record provenance for every dataset.
+  - Never mix synthetic and real observations without explicit labeling.
+  - Define metric denominators and observation windows before analysis.
+  - Validate data quality before drawing product conclusions.

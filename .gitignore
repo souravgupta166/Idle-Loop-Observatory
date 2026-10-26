@@ -1,0 +1,20 @@
+﻿.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.streamlit/secrets.toml
+.env
+*.duckdb
+*.db
+data/raw/*
+data/processed/*
+data/external/*
+logs/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+!data/external/.gitkeep
+!logs/.gitkeep
+
+# Generated synthetic data and duplicate root-level script
+data/synthetic/
+data/generate_synthetic_idle_events.py
