@@ -1,0 +1,21 @@
+column_name,data_type
+event_date,STRING
+event_timestamp,INT64
+event_name,STRING
+event_params,"ARRAY<STRUCT<key STRING, value STRUCT<string_value STRING, int_value INT64, float_value FLOAT64, double_value FLOAT64>>>"
+event_previous_timestamp,INT64
+event_value_in_usd,FLOAT64
+event_bundle_sequence_id,INT64
+event_server_timestamp_offset,INT64
+user_id,STRING
+user_pseudo_id,STRING
+user_properties,"ARRAY<STRUCT<key STRING, value STRUCT<string_value STRING, int_value INT64, float_value FLOAT64, double_value FLOAT64, set_timestamp_micros INT64>>>"
+user_first_touch_timestamp,INT64
+user_ltv,"STRUCT<revenue FLOAT64, currency STRING>"
+device,"STRUCT<category STRING, mobile_brand_name STRING, mobile_model_name STRING, mobile_marketing_name STRING, mobile_os_hardware_model STRING, operating_system STRING, operating_system_version STRING, vendor_id STRING, advertising_id STRING, language STRING, is_limited_ad_tracking STRING, time_zone_offset_seconds INT64, browser STRING, browser_version STRING, web_info STRUCT<browser STRING, browser_version STRING, hostname STRING>>"
+geo,"STRUCT<continent STRING, country STRING, region STRING, city STRING, sub_continent STRING, metro STRING>"
+app_info,"STRUCT<id STRING, version STRING, install_store STRING, firebase_app_id STRING, install_source STRING>"
+traffic_source,"STRUCT<name STRING, medium STRING, source STRING>"
+stream_id,STRING
+platform,STRING
+event_dimensions,STRUCT<hostname STRING>

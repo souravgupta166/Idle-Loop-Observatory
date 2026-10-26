@@ -1,0 +1,4 @@
+platform,cohort_users,d1_users,d1_retention_pct,d1_ci_lower_pct,d1_ci_upper_pct,d7_users,d7_retention_pct,d7_ci_lower_pct,d7_ci_upper_pct
+ALL_PLATFORMS,3998,718,17.96,16.8,19.18,191,4.78,4.16,5.48
+ANDROID,2670,472,17.68,16.28,19.17,129,4.83,4.08,5.71
+IOS,1328,246,18.52,16.53,20.7,62,4.67,3.66,5.94
